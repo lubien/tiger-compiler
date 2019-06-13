@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ -z "$1" ]
+then
+  for file in ../testcases/*.tig; do
+    ./lextest $file > .temp
+    diff "../lexfixtures/$(basename $file)" .temp
+    rm .temp
+  done;
+else
+  file="../testcases/test${1}.tig"
+  echo "Testing ${file}"
+  ./lextest $file > .temp
+  diff "../lexfixtures/$(basename $file)" .temp
+  rm .temp
+fi

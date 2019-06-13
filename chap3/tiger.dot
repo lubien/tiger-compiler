@@ -1,0 +1,25 @@
+// Gerado por GNU Bison 3.0.5.
+// Relate erros para <bug-bison@gnu.org>.
+// Site: <http://www.gnu.org/software/bison/>.
+
+digraph "tiger.grm"
+{
+  node [fontname = courier, shape = box, colorscheme = paired6]
+  edge [fontname = courier]
+
+  0 [label="Estado 0\n\l  0 $accept: . program $end\l"]
+  0 -> 1 [style=solid label="ID"]
+  0 -> 2 [style=dashed label="program"]
+  0 -> 3 [style=dashed label="exp"]
+  1 [label="Estado 1\n\l  2 exp: ID .\l"]
+  1 -> "1R2" [style=solid]
+ "1R2" [label="R2", fillcolor=3, shape=diamond, style=filled]
+  2 [label="Estado 2\n\l  0 $accept: program . $end\l"]
+  2 -> 4 [style=solid label="$end"]
+  3 [label="Estado 3\n\l  1 program: exp .\l"]
+  3 -> "3R1" [style=solid]
+ "3R1" [label="R1", fillcolor=3, shape=diamond, style=filled]
+  4 [label="Estado 4\n\l  0 $accept: program $end .\l"]
+  4 -> "4R0" [style=solid]
+ "4R0" [label="Acc", fillcolor=1, shape=diamond, style=filled]
+}
