@@ -1,47 +1,25 @@
-Terminais sem uso na gramática
-
-   STRING
-   INT
-   COMMA
-   COLON
-   SEMICOLON
-   LPAREN
-   RPAREN
-   LBRACK
-   RBRACK
-   LBRACE
-   RBRACE
-   DOT
-   PLUS
-   MINUS
-   TIMES
-   DIVIDE
-   EQ
-   NEQ
-   LT
-   LE
-   GT
-   GE
-   AND
-   OR
-   ASSIGN
-   ARRAY
-   IF
-   THEN
-   ELSE
-   WHILE
-   FOR
-   TO
-   DO
-   LET
-   IN
-   END
-   OF
-   BREAK
-   NIL
-   FUNCTION
-   VAR
-   TYPE
+Estado 1 conflitos: 2 de deslocamento/redução
+Estado 18 conflitos: 1 de redução/redução
+Estado 21 conflitos: 2 de deslocamento/redução
+Estado 66 conflitos: 2 de deslocamento/redução
+Estado 67 conflitos: 2 de deslocamento/redução
+Estado 68 conflitos: 2 de deslocamento/redução
+Estado 69 conflitos: 2 de deslocamento/redução
+Estado 70 conflitos: 2 de deslocamento/redução
+Estado 71 conflitos: 2 de deslocamento/redução
+Estado 72 conflitos: 2 de deslocamento/redução
+Estado 73 conflitos: 2 de deslocamento/redução
+Estado 74 conflitos: 2 de deslocamento/redução
+Estado 75 conflitos: 2 de deslocamento/redução
+Estado 76 conflitos: 12 de deslocamento/redução
+Estado 77 conflitos: 12 de deslocamento/redução
+Estado 80 conflitos: 12 de deslocamento/redução
+Estado 89 conflitos: 13 de deslocamento/redução
+Estado 90 conflitos: 12 de deslocamento/redução
+Estado 120 conflitos: 12 de deslocamento/redução
+Estado 122 conflitos: 12 de deslocamento/redução
+Estado 131 conflitos: 2 de deslocamento/redução, 22 de redução/redução
+Estado 140 conflitos: 12 de deslocamento/redução
 
 
 Gramática
@@ -50,56 +28,139 @@ Gramática
 
     1 program: exp
 
-    2 exp: ID
+    2 exp: lvalue
+    3    | NIL
+    4    | INT
+    5    | STRING
+    6    | BREAK
+    7    | ID LBRACE recordfield recordfields RBRACE
+    8    | ID LBRACK exp RBRACK OF exp
+    9    | ID LPAREN formalparams RPAREN
+   10    | IF exp THEN exp
+   11    | IF exp THEN exp ELSE exp
+   12    | WHILE exp DO exp
+   13    | FOR ID ASSIGN exp TO exp DO exp
+   14    | lvalue ASSIGN exp
+   15    | LET maybedecs IN maybeexpseq END
+   16    | LPAREN maybeexp RPAREN
+   17    | LPAREN expseqsemi RPAREN
+   18    | exp EQ exp
+   19    | exp NEQ exp
+   20    | exp GT exp
+   21    | exp LT exp
+   22    | exp GE exp
+   23    | exp LE exp
+   24    | exp AND exp
+   25    | exp OR exp
+   26    | exp MINUS exp
+   27    | exp PLUS exp
+   28    | exp DIVIDE exp
+   29    | exp TIMES exp
+   30    | MINUS exp
+
+   31 maybeexp: %empty
+   32         | exp
+
+   33 formalparams: %empty
+   34             | exp
+   35             | exp COMMA formalparams
+
+   36 recordfields: %empty
+   37             | COMMA recordfield recordfields
+
+   38 recordfield: ID EQ exp
+
+   39 maybeexpseq: %empty
+   40            | expseq
+
+   41 expseq: exp
+   42       | exp SEMICOLON expseq
+   43       | exp expseq
+
+   44 expseqsemi: exp SEMICOLON expseqsemi
+   45           | exp
+
+   46 lvalue: ID
+   47       | lvalue DOT ID
+   48       | ID LBRACK exp RBRACK
+   49       | lvalue LBRACK exp RBRACK
+
+   50 maybedecs: %empty
+   51          | decs
+
+   52 decs: dec
+   53     | decs dec
+
+   54 dec: tydec
+   55    | vardec
+   56    | fundec
+
+   57 tydec: TYPE ID EQ ty
+
+   58 ty: ID
+   59   | LBRACE tyfields RBRACE
+   60   | ARRAY OF ID
+
+   61 tyfields: %empty
+   62         | tyfield
+   63         | tyfield COMMA tyfields
+
+   64 tyfield: ID COLON ID
+
+   65 vardec: VAR ID ASSIGN exp
+   66       | VAR ID COLON ID ASSIGN exp
+
+   67 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ exp
+   68       | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp
 
 
 Terminais, com as regras onde eles aparecem
 
 $end (0) 0
 error (256)
-ID (258) 2
-STRING (259)
-INT (260)
-COMMA (261)
-COLON (262)
-SEMICOLON (263)
-LPAREN (264)
-RPAREN (265)
-LBRACK (266)
-RBRACK (267)
-LBRACE (268)
-RBRACE (269)
-DOT (270)
-PLUS (271)
-MINUS (272)
-TIMES (273)
-DIVIDE (274)
-EQ (275)
-NEQ (276)
-LT (277)
-LE (278)
-GT (279)
-GE (280)
-AND (281)
-OR (282)
-ASSIGN (283)
-ARRAY (284)
-IF (285)
-THEN (286)
-ELSE (287)
-WHILE (288)
-FOR (289)
-TO (290)
-DO (291)
-LET (292)
-IN (293)
-END (294)
-OF (295)
-BREAK (296)
-NIL (297)
-FUNCTION (298)
-VAR (299)
-TYPE (300)
+ID (258) 7 8 9 13 38 46 47 48 57 58 60 64 65 66 67 68
+STRING (259) 5
+INT (260) 4
+COMMA (261) 35 37 63
+COLON (262) 64 66 68
+SEMICOLON (263) 42 44
+LPAREN (264) 9 16 17 67 68
+RPAREN (265) 9 16 17 67 68
+LBRACK (266) 8 48 49
+RBRACK (267) 8 48 49
+LBRACE (268) 7 59
+RBRACE (269) 7 59
+DOT (270) 47
+PLUS (271) 27
+MINUS (272) 26 30
+TIMES (273) 29
+DIVIDE (274) 28
+EQ (275) 18 38 57 67 68
+NEQ (276) 19
+LT (277) 21
+LE (278) 23
+GT (279) 20
+GE (280) 22
+AND (281) 24
+OR (282) 25
+ASSIGN (283) 13 14 65 66
+ARRAY (284) 60
+IF (285) 10 11
+THEN (286) 10 11
+ELSE (287) 11
+WHILE (288) 12
+FOR (289) 13
+TO (290) 13
+DO (291) 12 13
+LET (292) 15
+IN (293) 15
+END (294) 15
+OF (295) 8 60
+BREAK (296) 6
+NIL (297) 3
+FUNCTION (298) 67 68
+VAR (299) 65 66
+TYPE (300) 57
 
 
 Não terminais com as regras onde eles aparecem
@@ -109,42 +170,2696 @@ $accept (46)
 program (47)
     à esquerda: 1, à direita: 0
 exp (48)
-    à esquerda: 2, à direita: 1
+    à esquerda: 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
+    22 23 24 25 26 27 28 29 30, à direita: 1 8 10 11 12 13 14 18 19
+    20 21 22 23 24 25 26 27 28 29 30 32 34 35 38 41 42 43 44 45 48
+    49 65 66 67 68
+maybeexp (49)
+    à esquerda: 31 32, à direita: 16
+formalparams (50)
+    à esquerda: 33 34 35, à direita: 9 35
+recordfields (51)
+    à esquerda: 36 37, à direita: 7 37
+recordfield (52)
+    à esquerda: 38, à direita: 7 37
+maybeexpseq (53)
+    à esquerda: 39 40, à direita: 15
+expseq (54)
+    à esquerda: 41 42 43, à direita: 40 42 43
+expseqsemi (55)
+    à esquerda: 44 45, à direita: 17 44
+lvalue (56)
+    à esquerda: 46 47 48 49, à direita: 2 14 47 49
+maybedecs (57)
+    à esquerda: 50 51, à direita: 15
+decs (58)
+    à esquerda: 52 53, à direita: 51 53
+dec (59)
+    à esquerda: 54 55 56, à direita: 52 53
+tydec (60)
+    à esquerda: 57, à direita: 54
+ty (61)
+    à esquerda: 58 59 60, à direita: 57
+tyfields (62)
+    à esquerda: 61 62 63, à direita: 59 63 67 68
+tyfield (63)
+    à esquerda: 64, à direita: 62 63
+vardec (64)
+    à esquerda: 65 66, à direita: 55
+fundec (65)
+    à esquerda: 67 68, à direita: 56
 
 
 Estado 0
 
     0 $accept: . program $end
 
-    ID  deslocar, e ir ao estado 1
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
 
-    program  ir ao estado 2
-    exp      ir ao estado 3
+    program  ir ao estado 12
+    exp      ir ao estado 13
+    lvalue   ir ao estado 14
 
 
 Estado 1
 
-    2 exp: ID .
+    7 exp: ID . LBRACE recordfield recordfields RBRACE
+    8    | ID . LBRACK exp RBRACK OF exp
+    9    | ID . LPAREN formalparams RPAREN
+   46 lvalue: ID .
+   48       | ID . LBRACK exp RBRACK
 
-    $padrão  reduzir usando a regra 2 (exp)
+    LPAREN  deslocar, e ir ao estado 15
+    LBRACK  deslocar, e ir ao estado 16
+    LBRACE  deslocar, e ir ao estado 17
+
+    LPAREN    [reduzir usando a regra 46 (lvalue)]
+    LBRACK    [reduzir usando a regra 46 (lvalue)]
+    $padrão  reduzir usando a regra 46 (lvalue)
 
 
 Estado 2
 
-    0 $accept: program . $end
+    5 exp: STRING .
 
-    $end  deslocar, e ir ao estado 4
+    $padrão  reduzir usando a regra 5 (exp)
 
 
 Estado 3
 
-    1 program: exp .
+    4 exp: INT .
 
-    $padrão  reduzir usando a regra 1 (program)
+    $padrão  reduzir usando a regra 4 (exp)
 
 
 Estado 4
 
+   16 exp: LPAREN . maybeexp RPAREN
+   17    | LPAREN . expseqsemi RPAREN
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    $padrão  reduzir usando a regra 31 (maybeexp)
+
+    exp         ir ao estado 18
+    maybeexp    ir ao estado 19
+    expseqsemi  ir ao estado 20
+    lvalue      ir ao estado 14
+
+
+Estado 5
+
+   30 exp: MINUS . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 21
+    lvalue  ir ao estado 14
+
+
+Estado 6
+
+   10 exp: IF . exp THEN exp
+   11    | IF . exp THEN exp ELSE exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 22
+    lvalue  ir ao estado 14
+
+
+Estado 7
+
+   12 exp: WHILE . exp DO exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 23
+    lvalue  ir ao estado 14
+
+
+Estado 8
+
+   13 exp: FOR . ID ASSIGN exp TO exp DO exp
+
+    ID  deslocar, e ir ao estado 24
+
+
+Estado 9
+
+   15 exp: LET . maybedecs IN maybeexpseq END
+
+    FUNCTION  deslocar, e ir ao estado 25
+    VAR       deslocar, e ir ao estado 26
+    TYPE      deslocar, e ir ao estado 27
+
+    $padrão  reduzir usando a regra 50 (maybedecs)
+
+    maybedecs  ir ao estado 28
+    decs       ir ao estado 29
+    dec        ir ao estado 30
+    tydec      ir ao estado 31
+    vardec     ir ao estado 32
+    fundec     ir ao estado 33
+
+
+Estado 10
+
+    6 exp: BREAK .
+
+    $padrão  reduzir usando a regra 6 (exp)
+
+
+Estado 11
+
+    3 exp: NIL .
+
+    $padrão  reduzir usando a regra 3 (exp)
+
+
+Estado 12
+
+    0 $accept: program . $end
+
+    $end  deslocar, e ir ao estado 34
+
+
+Estado 13
+
+    1 program: exp .
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    $padrão  reduzir usando a regra 1 (program)
+
+
+Estado 14
+
+    2 exp: lvalue .
+   14    | lvalue . ASSIGN exp
+   47 lvalue: lvalue . DOT ID
+   49       | lvalue . LBRACK exp RBRACK
+
+    LBRACK  deslocar, e ir ao estado 47
+    DOT     deslocar, e ir ao estado 48
+    ASSIGN  deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 2 (exp)
+
+
+Estado 15
+
+    9 exp: ID LPAREN . formalparams RPAREN
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    $padrão  reduzir usando a regra 33 (formalparams)
+
+    exp           ir ao estado 50
+    formalparams  ir ao estado 51
+    lvalue        ir ao estado 14
+
+
+Estado 16
+
+    8 exp: ID LBRACK . exp RBRACK OF exp
+   48 lvalue: ID LBRACK . exp RBRACK
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 52
+    lvalue  ir ao estado 14
+
+
+Estado 17
+
+    7 exp: ID LBRACE . recordfield recordfields RBRACE
+
+    ID  deslocar, e ir ao estado 53
+
+    recordfield  ir ao estado 54
+
+
+Estado 18
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   32 maybeexp: exp .
+   44 expseqsemi: exp . SEMICOLON expseqsemi
+   45           | exp .
+
+    SEMICOLON  deslocar, e ir ao estado 55
+    PLUS       deslocar, e ir ao estado 35
+    MINUS      deslocar, e ir ao estado 36
+    TIMES      deslocar, e ir ao estado 37
+    DIVIDE     deslocar, e ir ao estado 38
+    EQ         deslocar, e ir ao estado 39
+    NEQ        deslocar, e ir ao estado 40
+    LT         deslocar, e ir ao estado 41
+    LE         deslocar, e ir ao estado 42
+    GT         deslocar, e ir ao estado 43
+    GE         deslocar, e ir ao estado 44
+    AND        deslocar, e ir ao estado 45
+    OR         deslocar, e ir ao estado 46
+
+    RPAREN    reduzir usando a regra 32 (maybeexp)
+    RPAREN    [reduzir usando a regra 45 (expseqsemi)]
+    $padrão  reduzir usando a regra 32 (maybeexp)
+
+
+Estado 19
+
+   16 exp: LPAREN maybeexp . RPAREN
+
+    RPAREN  deslocar, e ir ao estado 56
+
+
+Estado 20
+
+   17 exp: LPAREN expseqsemi . RPAREN
+
+    RPAREN  deslocar, e ir ao estado 57
+
+
+Estado 21
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   30    | MINUS exp .
+
+    AND  deslocar, e ir ao estado 45
+    OR   deslocar, e ir ao estado 46
+
+    AND       [reduzir usando a regra 30 (exp)]
+    OR        [reduzir usando a regra 30 (exp)]
+    $padrão  reduzir usando a regra 30 (exp)
+
+
+Estado 22
+
+   10 exp: IF exp . THEN exp
+   11    | IF exp . THEN exp ELSE exp
+   18    | exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+    THEN    deslocar, e ir ao estado 58
+
+
+Estado 23
+
+   12 exp: WHILE exp . DO exp
+   18    | exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+    DO      deslocar, e ir ao estado 59
+
+
+Estado 24
+
+   13 exp: FOR ID . ASSIGN exp TO exp DO exp
+
+    ASSIGN  deslocar, e ir ao estado 60
+
+
+Estado 25
+
+   67 fundec: FUNCTION . ID LPAREN tyfields RPAREN EQ exp
+   68       | FUNCTION . ID LPAREN tyfields RPAREN COLON ID EQ exp
+
+    ID  deslocar, e ir ao estado 61
+
+
+Estado 26
+
+   65 vardec: VAR . ID ASSIGN exp
+   66       | VAR . ID COLON ID ASSIGN exp
+
+    ID  deslocar, e ir ao estado 62
+
+
+Estado 27
+
+   57 tydec: TYPE . ID EQ ty
+
+    ID  deslocar, e ir ao estado 63
+
+
+Estado 28
+
+   15 exp: LET maybedecs . IN maybeexpseq END
+
+    IN  deslocar, e ir ao estado 64
+
+
+Estado 29
+
+   51 maybedecs: decs .
+   53 decs: decs . dec
+
+    FUNCTION  deslocar, e ir ao estado 25
+    VAR       deslocar, e ir ao estado 26
+    TYPE      deslocar, e ir ao estado 27
+
+    $padrão  reduzir usando a regra 51 (maybedecs)
+
+    dec     ir ao estado 65
+    tydec   ir ao estado 31
+    vardec  ir ao estado 32
+    fundec  ir ao estado 33
+
+
+Estado 30
+
+   52 decs: dec .
+
+    $padrão  reduzir usando a regra 52 (decs)
+
+
+Estado 31
+
+   54 dec: tydec .
+
+    $padrão  reduzir usando a regra 54 (dec)
+
+
+Estado 32
+
+   55 dec: vardec .
+
+    $padrão  reduzir usando a regra 55 (dec)
+
+
+Estado 33
+
+   56 dec: fundec .
+
+    $padrão  reduzir usando a regra 56 (dec)
+
+
+Estado 34
+
     0 $accept: program $end .
 
     $padrão  aceitar
+
+
+Estado 35
+
+   27 exp: exp PLUS . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 66
+    lvalue  ir ao estado 14
+
+
+Estado 36
+
+   26 exp: exp MINUS . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 67
+    lvalue  ir ao estado 14
+
+
+Estado 37
+
+   29 exp: exp TIMES . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 68
+    lvalue  ir ao estado 14
+
+
+Estado 38
+
+   28 exp: exp DIVIDE . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 69
+    lvalue  ir ao estado 14
+
+
+Estado 39
+
+   18 exp: exp EQ . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 70
+    lvalue  ir ao estado 14
+
+
+Estado 40
+
+   19 exp: exp NEQ . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 71
+    lvalue  ir ao estado 14
+
+
+Estado 41
+
+   21 exp: exp LT . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 72
+    lvalue  ir ao estado 14
+
+
+Estado 42
+
+   23 exp: exp LE . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 73
+    lvalue  ir ao estado 14
+
+
+Estado 43
+
+   20 exp: exp GT . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 74
+    lvalue  ir ao estado 14
+
+
+Estado 44
+
+   22 exp: exp GE . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 75
+    lvalue  ir ao estado 14
+
+
+Estado 45
+
+   24 exp: exp AND . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 76
+    lvalue  ir ao estado 14
+
+
+Estado 46
+
+   25 exp: exp OR . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 77
+    lvalue  ir ao estado 14
+
+
+Estado 47
+
+   49 lvalue: lvalue LBRACK . exp RBRACK
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 78
+    lvalue  ir ao estado 14
+
+
+Estado 48
+
+   47 lvalue: lvalue DOT . ID
+
+    ID  deslocar, e ir ao estado 79
+
+
+Estado 49
+
+   14 exp: lvalue ASSIGN . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 80
+    lvalue  ir ao estado 14
+
+
+Estado 50
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   34 formalparams: exp .
+   35             | exp . COMMA formalparams
+
+    COMMA   deslocar, e ir ao estado 81
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    $padrão  reduzir usando a regra 34 (formalparams)
+
+
+Estado 51
+
+    9 exp: ID LPAREN formalparams . RPAREN
+
+    RPAREN  deslocar, e ir ao estado 82
+
+
+Estado 52
+
+    8 exp: ID LBRACK exp . RBRACK OF exp
+   18    | exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   48 lvalue: ID LBRACK exp . RBRACK
+
+    RBRACK  deslocar, e ir ao estado 83
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+
+Estado 53
+
+   38 recordfield: ID . EQ exp
+
+    EQ  deslocar, e ir ao estado 84
+
+
+Estado 54
+
+    7 exp: ID LBRACE recordfield . recordfields RBRACE
+
+    COMMA  deslocar, e ir ao estado 85
+
+    $padrão  reduzir usando a regra 36 (recordfields)
+
+    recordfields  ir ao estado 86
+
+
+Estado 55
+
+   44 expseqsemi: exp SEMICOLON . expseqsemi
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp         ir ao estado 87
+    expseqsemi  ir ao estado 88
+    lvalue      ir ao estado 14
+
+
+Estado 56
+
+   16 exp: LPAREN maybeexp RPAREN .
+
+    $padrão  reduzir usando a regra 16 (exp)
+
+
+Estado 57
+
+   17 exp: LPAREN expseqsemi RPAREN .
+
+    $padrão  reduzir usando a regra 17 (exp)
+
+
+Estado 58
+
+   10 exp: IF exp THEN . exp
+   11    | IF exp THEN . exp ELSE exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 89
+    lvalue  ir ao estado 14
+
+
+Estado 59
+
+   12 exp: WHILE exp DO . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 90
+    lvalue  ir ao estado 14
+
+
+Estado 60
+
+   13 exp: FOR ID ASSIGN . exp TO exp DO exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 91
+    lvalue  ir ao estado 14
+
+
+Estado 61
+
+   67 fundec: FUNCTION ID . LPAREN tyfields RPAREN EQ exp
+   68       | FUNCTION ID . LPAREN tyfields RPAREN COLON ID EQ exp
+
+    LPAREN  deslocar, e ir ao estado 92
+
+
+Estado 62
+
+   65 vardec: VAR ID . ASSIGN exp
+   66       | VAR ID . COLON ID ASSIGN exp
+
+    COLON   deslocar, e ir ao estado 93
+    ASSIGN  deslocar, e ir ao estado 94
+
+
+Estado 63
+
+   57 tydec: TYPE ID . EQ ty
+
+    EQ  deslocar, e ir ao estado 95
+
+
+Estado 64
+
+   15 exp: LET maybedecs IN . maybeexpseq END
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    $padrão  reduzir usando a regra 39 (maybeexpseq)
+
+    exp          ir ao estado 96
+    maybeexpseq  ir ao estado 97
+    expseq       ir ao estado 98
+    lvalue       ir ao estado 14
+
+
+Estado 65
+
+   53 decs: decs dec .
+
+    $padrão  reduzir usando a regra 53 (decs)
+
+
+Estado 66
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   27    | exp PLUS exp .
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    AND       [reduzir usando a regra 27 (exp)]
+    OR        [reduzir usando a regra 27 (exp)]
+    $padrão  reduzir usando a regra 27 (exp)
+
+
+Estado 67
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   26    | exp MINUS exp .
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    AND       [reduzir usando a regra 26 (exp)]
+    OR        [reduzir usando a regra 26 (exp)]
+    $padrão  reduzir usando a regra 26 (exp)
+
+
+Estado 68
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   29    | exp TIMES exp .
+
+    AND  deslocar, e ir ao estado 45
+    OR   deslocar, e ir ao estado 46
+
+    AND       [reduzir usando a regra 29 (exp)]
+    OR        [reduzir usando a regra 29 (exp)]
+    $padrão  reduzir usando a regra 29 (exp)
+
+
+Estado 69
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   28    | exp DIVIDE exp .
+   29    | exp . TIMES exp
+
+    AND  deslocar, e ir ao estado 45
+    OR   deslocar, e ir ao estado 46
+
+    AND       [reduzir usando a regra 28 (exp)]
+    OR        [reduzir usando a regra 28 (exp)]
+    $padrão  reduzir usando a regra 28 (exp)
+
+
+Estado 70
+
+   18 exp: exp . EQ exp
+   18    | exp EQ exp .
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    AND       [reduzir usando a regra 18 (exp)]
+    OR        [reduzir usando a regra 18 (exp)]
+    $padrão  reduzir usando a regra 18 (exp)
+
+
+Estado 71
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   19    | exp NEQ exp .
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    AND       [reduzir usando a regra 19 (exp)]
+    OR        [reduzir usando a regra 19 (exp)]
+    $padrão  reduzir usando a regra 19 (exp)
+
+
+Estado 72
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   21    | exp LT exp .
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    AND       [reduzir usando a regra 21 (exp)]
+    OR        [reduzir usando a regra 21 (exp)]
+    $padrão  reduzir usando a regra 21 (exp)
+
+
+Estado 73
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   23    | exp LE exp .
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    AND       [reduzir usando a regra 23 (exp)]
+    OR        [reduzir usando a regra 23 (exp)]
+    $padrão  reduzir usando a regra 23 (exp)
+
+
+Estado 74
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   20    | exp GT exp .
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    AND       [reduzir usando a regra 20 (exp)]
+    OR        [reduzir usando a regra 20 (exp)]
+    $padrão  reduzir usando a regra 20 (exp)
+
+
+Estado 75
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   22    | exp GE exp .
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    AND       [reduzir usando a regra 22 (exp)]
+    OR        [reduzir usando a regra 22 (exp)]
+    $padrão  reduzir usando a regra 22 (exp)
+
+
+Estado 76
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   24    | exp AND exp .
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    PLUS      [reduzir usando a regra 24 (exp)]
+    MINUS     [reduzir usando a regra 24 (exp)]
+    TIMES     [reduzir usando a regra 24 (exp)]
+    DIVIDE    [reduzir usando a regra 24 (exp)]
+    EQ        [reduzir usando a regra 24 (exp)]
+    NEQ       [reduzir usando a regra 24 (exp)]
+    LT        [reduzir usando a regra 24 (exp)]
+    LE        [reduzir usando a regra 24 (exp)]
+    GT        [reduzir usando a regra 24 (exp)]
+    GE        [reduzir usando a regra 24 (exp)]
+    AND       [reduzir usando a regra 24 (exp)]
+    OR        [reduzir usando a regra 24 (exp)]
+    $padrão  reduzir usando a regra 24 (exp)
+
+
+Estado 77
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   25    | exp OR exp .
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    PLUS      [reduzir usando a regra 25 (exp)]
+    MINUS     [reduzir usando a regra 25 (exp)]
+    TIMES     [reduzir usando a regra 25 (exp)]
+    DIVIDE    [reduzir usando a regra 25 (exp)]
+    EQ        [reduzir usando a regra 25 (exp)]
+    NEQ       [reduzir usando a regra 25 (exp)]
+    LT        [reduzir usando a regra 25 (exp)]
+    LE        [reduzir usando a regra 25 (exp)]
+    GT        [reduzir usando a regra 25 (exp)]
+    GE        [reduzir usando a regra 25 (exp)]
+    AND       [reduzir usando a regra 25 (exp)]
+    OR        [reduzir usando a regra 25 (exp)]
+    $padrão  reduzir usando a regra 25 (exp)
+
+
+Estado 78
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   49 lvalue: lvalue LBRACK exp . RBRACK
+
+    RBRACK  deslocar, e ir ao estado 99
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+
+Estado 79
+
+   47 lvalue: lvalue DOT ID .
+
+    $padrão  reduzir usando a regra 47 (lvalue)
+
+
+Estado 80
+
+   14 exp: lvalue ASSIGN exp .
+   18    | exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    PLUS      [reduzir usando a regra 14 (exp)]
+    MINUS     [reduzir usando a regra 14 (exp)]
+    TIMES     [reduzir usando a regra 14 (exp)]
+    DIVIDE    [reduzir usando a regra 14 (exp)]
+    EQ        [reduzir usando a regra 14 (exp)]
+    NEQ       [reduzir usando a regra 14 (exp)]
+    LT        [reduzir usando a regra 14 (exp)]
+    LE        [reduzir usando a regra 14 (exp)]
+    GT        [reduzir usando a regra 14 (exp)]
+    GE        [reduzir usando a regra 14 (exp)]
+    AND       [reduzir usando a regra 14 (exp)]
+    OR        [reduzir usando a regra 14 (exp)]
+    $padrão  reduzir usando a regra 14 (exp)
+
+
+Estado 81
+
+   35 formalparams: exp COMMA . formalparams
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    $padrão  reduzir usando a regra 33 (formalparams)
+
+    exp           ir ao estado 50
+    formalparams  ir ao estado 100
+    lvalue        ir ao estado 14
+
+
+Estado 82
+
+    9 exp: ID LPAREN formalparams RPAREN .
+
+    $padrão  reduzir usando a regra 9 (exp)
+
+
+Estado 83
+
+    8 exp: ID LBRACK exp RBRACK . OF exp
+   48 lvalue: ID LBRACK exp RBRACK .
+
+    OF  deslocar, e ir ao estado 101
+
+    $padrão  reduzir usando a regra 48 (lvalue)
+
+
+Estado 84
+
+   38 recordfield: ID EQ . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 102
+    lvalue  ir ao estado 14
+
+
+Estado 85
+
+   37 recordfields: COMMA . recordfield recordfields
+
+    ID  deslocar, e ir ao estado 53
+
+    recordfield  ir ao estado 103
+
+
+Estado 86
+
+    7 exp: ID LBRACE recordfield recordfields . RBRACE
+
+    RBRACE  deslocar, e ir ao estado 104
+
+
+Estado 87
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   44 expseqsemi: exp . SEMICOLON expseqsemi
+   45           | exp .
+
+    SEMICOLON  deslocar, e ir ao estado 55
+    PLUS       deslocar, e ir ao estado 35
+    MINUS      deslocar, e ir ao estado 36
+    TIMES      deslocar, e ir ao estado 37
+    DIVIDE     deslocar, e ir ao estado 38
+    EQ         deslocar, e ir ao estado 39
+    NEQ        deslocar, e ir ao estado 40
+    LT         deslocar, e ir ao estado 41
+    LE         deslocar, e ir ao estado 42
+    GT         deslocar, e ir ao estado 43
+    GE         deslocar, e ir ao estado 44
+    AND        deslocar, e ir ao estado 45
+    OR         deslocar, e ir ao estado 46
+
+    $padrão  reduzir usando a regra 45 (expseqsemi)
+
+
+Estado 88
+
+   44 expseqsemi: exp SEMICOLON expseqsemi .
+
+    $padrão  reduzir usando a regra 44 (expseqsemi)
+
+
+Estado 89
+
+   10 exp: IF exp THEN exp .
+   11    | IF exp THEN exp . ELSE exp
+   18    | exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+    ELSE    deslocar, e ir ao estado 105
+
+    PLUS      [reduzir usando a regra 10 (exp)]
+    MINUS     [reduzir usando a regra 10 (exp)]
+    TIMES     [reduzir usando a regra 10 (exp)]
+    DIVIDE    [reduzir usando a regra 10 (exp)]
+    EQ        [reduzir usando a regra 10 (exp)]
+    NEQ       [reduzir usando a regra 10 (exp)]
+    LT        [reduzir usando a regra 10 (exp)]
+    LE        [reduzir usando a regra 10 (exp)]
+    GT        [reduzir usando a regra 10 (exp)]
+    GE        [reduzir usando a regra 10 (exp)]
+    AND       [reduzir usando a regra 10 (exp)]
+    OR        [reduzir usando a regra 10 (exp)]
+    ELSE      [reduzir usando a regra 10 (exp)]
+    $padrão  reduzir usando a regra 10 (exp)
+
+
+Estado 90
+
+   12 exp: WHILE exp DO exp .
+   18    | exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    PLUS      [reduzir usando a regra 12 (exp)]
+    MINUS     [reduzir usando a regra 12 (exp)]
+    TIMES     [reduzir usando a regra 12 (exp)]
+    DIVIDE    [reduzir usando a regra 12 (exp)]
+    EQ        [reduzir usando a regra 12 (exp)]
+    NEQ       [reduzir usando a regra 12 (exp)]
+    LT        [reduzir usando a regra 12 (exp)]
+    LE        [reduzir usando a regra 12 (exp)]
+    GT        [reduzir usando a regra 12 (exp)]
+    GE        [reduzir usando a regra 12 (exp)]
+    AND       [reduzir usando a regra 12 (exp)]
+    OR        [reduzir usando a regra 12 (exp)]
+    $padrão  reduzir usando a regra 12 (exp)
+
+
+Estado 91
+
+   13 exp: FOR ID ASSIGN exp . TO exp DO exp
+   18    | exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+    TO      deslocar, e ir ao estado 106
+
+
+Estado 92
+
+   67 fundec: FUNCTION ID LPAREN . tyfields RPAREN EQ exp
+   68       | FUNCTION ID LPAREN . tyfields RPAREN COLON ID EQ exp
+
+    ID  deslocar, e ir ao estado 107
+
+    $padrão  reduzir usando a regra 61 (tyfields)
+
+    tyfields  ir ao estado 108
+    tyfield   ir ao estado 109
+
+
+Estado 93
+
+   66 vardec: VAR ID COLON . ID ASSIGN exp
+
+    ID  deslocar, e ir ao estado 110
+
+
+Estado 94
+
+   65 vardec: VAR ID ASSIGN . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 111
+    lvalue  ir ao estado 14
+
+
+Estado 95
+
+   57 tydec: TYPE ID EQ . ty
+
+    ID      deslocar, e ir ao estado 112
+    LBRACE  deslocar, e ir ao estado 113
+    ARRAY   deslocar, e ir ao estado 114
+
+    ty  ir ao estado 115
+
+
+Estado 96
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   41 expseq: exp .
+   42       | exp . SEMICOLON expseq
+   43       | exp . expseq
+
+    ID         deslocar, e ir ao estado 1
+    STRING     deslocar, e ir ao estado 2
+    INT        deslocar, e ir ao estado 3
+    SEMICOLON  deslocar, e ir ao estado 116
+    LPAREN     deslocar, e ir ao estado 4
+    PLUS       deslocar, e ir ao estado 35
+    MINUS      deslocar, e ir ao estado 117
+    TIMES      deslocar, e ir ao estado 37
+    DIVIDE     deslocar, e ir ao estado 38
+    EQ         deslocar, e ir ao estado 39
+    NEQ        deslocar, e ir ao estado 40
+    LT         deslocar, e ir ao estado 41
+    LE         deslocar, e ir ao estado 42
+    GT         deslocar, e ir ao estado 43
+    GE         deslocar, e ir ao estado 44
+    AND        deslocar, e ir ao estado 45
+    OR         deslocar, e ir ao estado 46
+    IF         deslocar, e ir ao estado 6
+    WHILE      deslocar, e ir ao estado 7
+    FOR        deslocar, e ir ao estado 8
+    LET        deslocar, e ir ao estado 9
+    BREAK      deslocar, e ir ao estado 10
+    NIL        deslocar, e ir ao estado 11
+
+    $padrão  reduzir usando a regra 41 (expseq)
+
+    exp     ir ao estado 96
+    expseq  ir ao estado 118
+    lvalue  ir ao estado 14
+
+
+Estado 97
+
+   15 exp: LET maybedecs IN maybeexpseq . END
+
+    END  deslocar, e ir ao estado 119
+
+
+Estado 98
+
+   40 maybeexpseq: expseq .
+
+    $padrão  reduzir usando a regra 40 (maybeexpseq)
+
+
+Estado 99
+
+   49 lvalue: lvalue LBRACK exp RBRACK .
+
+    $padrão  reduzir usando a regra 49 (lvalue)
+
+
+Estado 100
+
+   35 formalparams: exp COMMA formalparams .
+
+    $padrão  reduzir usando a regra 35 (formalparams)
+
+
+Estado 101
+
+    8 exp: ID LBRACK exp RBRACK OF . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 120
+    lvalue  ir ao estado 14
+
+
+Estado 102
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   38 recordfield: ID EQ exp .
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    $padrão  reduzir usando a regra 38 (recordfield)
+
+
+Estado 103
+
+   37 recordfields: COMMA recordfield . recordfields
+
+    COMMA  deslocar, e ir ao estado 85
+
+    $padrão  reduzir usando a regra 36 (recordfields)
+
+    recordfields  ir ao estado 121
+
+
+Estado 104
+
+    7 exp: ID LBRACE recordfield recordfields RBRACE .
+
+    $padrão  reduzir usando a regra 7 (exp)
+
+
+Estado 105
+
+   11 exp: IF exp THEN exp ELSE . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 122
+    lvalue  ir ao estado 14
+
+
+Estado 106
+
+   13 exp: FOR ID ASSIGN exp TO . exp DO exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 123
+    lvalue  ir ao estado 14
+
+
+Estado 107
+
+   64 tyfield: ID . COLON ID
+
+    COLON  deslocar, e ir ao estado 124
+
+
+Estado 108
+
+   67 fundec: FUNCTION ID LPAREN tyfields . RPAREN EQ exp
+   68       | FUNCTION ID LPAREN tyfields . RPAREN COLON ID EQ exp
+
+    RPAREN  deslocar, e ir ao estado 125
+
+
+Estado 109
+
+   62 tyfields: tyfield .
+   63         | tyfield . COMMA tyfields
+
+    COMMA  deslocar, e ir ao estado 126
+
+    $padrão  reduzir usando a regra 62 (tyfields)
+
+
+Estado 110
+
+   66 vardec: VAR ID COLON ID . ASSIGN exp
+
+    ASSIGN  deslocar, e ir ao estado 127
+
+
+Estado 111
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   65 vardec: VAR ID ASSIGN exp .
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    $padrão  reduzir usando a regra 65 (vardec)
+
+
+Estado 112
+
+   58 ty: ID .
+
+    $padrão  reduzir usando a regra 58 (ty)
+
+
+Estado 113
+
+   59 ty: LBRACE . tyfields RBRACE
+
+    ID  deslocar, e ir ao estado 107
+
+    $padrão  reduzir usando a regra 61 (tyfields)
+
+    tyfields  ir ao estado 128
+    tyfield   ir ao estado 109
+
+
+Estado 114
+
+   60 ty: ARRAY . OF ID
+
+    OF  deslocar, e ir ao estado 129
+
+
+Estado 115
+
+   57 tydec: TYPE ID EQ ty .
+
+    $padrão  reduzir usando a regra 57 (tydec)
+
+
+Estado 116
+
+   42 expseq: exp SEMICOLON . expseq
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 96
+    expseq  ir ao estado 130
+    lvalue  ir ao estado 14
+
+
+Estado 117
+
+   26 exp: exp MINUS . exp
+   30    | MINUS . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 131
+    lvalue  ir ao estado 14
+
+
+Estado 118
+
+   43 expseq: exp expseq .
+
+    $padrão  reduzir usando a regra 43 (expseq)
+
+
+Estado 119
+
+   15 exp: LET maybedecs IN maybeexpseq END .
+
+    $padrão  reduzir usando a regra 15 (exp)
+
+
+Estado 120
+
+    8 exp: ID LBRACK exp RBRACK OF exp .
+   18    | exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    PLUS      [reduzir usando a regra 8 (exp)]
+    MINUS     [reduzir usando a regra 8 (exp)]
+    TIMES     [reduzir usando a regra 8 (exp)]
+    DIVIDE    [reduzir usando a regra 8 (exp)]
+    EQ        [reduzir usando a regra 8 (exp)]
+    NEQ       [reduzir usando a regra 8 (exp)]
+    LT        [reduzir usando a regra 8 (exp)]
+    LE        [reduzir usando a regra 8 (exp)]
+    GT        [reduzir usando a regra 8 (exp)]
+    GE        [reduzir usando a regra 8 (exp)]
+    AND       [reduzir usando a regra 8 (exp)]
+    OR        [reduzir usando a regra 8 (exp)]
+    $padrão  reduzir usando a regra 8 (exp)
+
+
+Estado 121
+
+   37 recordfields: COMMA recordfield recordfields .
+
+    $padrão  reduzir usando a regra 37 (recordfields)
+
+
+Estado 122
+
+   11 exp: IF exp THEN exp ELSE exp .
+   18    | exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    PLUS      [reduzir usando a regra 11 (exp)]
+    MINUS     [reduzir usando a regra 11 (exp)]
+    TIMES     [reduzir usando a regra 11 (exp)]
+    DIVIDE    [reduzir usando a regra 11 (exp)]
+    EQ        [reduzir usando a regra 11 (exp)]
+    NEQ       [reduzir usando a regra 11 (exp)]
+    LT        [reduzir usando a regra 11 (exp)]
+    LE        [reduzir usando a regra 11 (exp)]
+    GT        [reduzir usando a regra 11 (exp)]
+    GE        [reduzir usando a regra 11 (exp)]
+    AND       [reduzir usando a regra 11 (exp)]
+    OR        [reduzir usando a regra 11 (exp)]
+    $padrão  reduzir usando a regra 11 (exp)
+
+
+Estado 123
+
+   13 exp: FOR ID ASSIGN exp TO exp . DO exp
+   18    | exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+    DO      deslocar, e ir ao estado 132
+
+
+Estado 124
+
+   64 tyfield: ID COLON . ID
+
+    ID  deslocar, e ir ao estado 133
+
+
+Estado 125
+
+   67 fundec: FUNCTION ID LPAREN tyfields RPAREN . EQ exp
+   68       | FUNCTION ID LPAREN tyfields RPAREN . COLON ID EQ exp
+
+    COLON  deslocar, e ir ao estado 134
+    EQ     deslocar, e ir ao estado 135
+
+
+Estado 126
+
+   63 tyfields: tyfield COMMA . tyfields
+
+    ID  deslocar, e ir ao estado 107
+
+    $padrão  reduzir usando a regra 61 (tyfields)
+
+    tyfields  ir ao estado 136
+    tyfield   ir ao estado 109
+
+
+Estado 127
+
+   66 vardec: VAR ID COLON ID ASSIGN . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 137
+    lvalue  ir ao estado 14
+
+
+Estado 128
+
+   59 ty: LBRACE tyfields . RBRACE
+
+    RBRACE  deslocar, e ir ao estado 138
+
+
+Estado 129
+
+   60 ty: ARRAY OF . ID
+
+    ID  deslocar, e ir ao estado 139
+
+
+Estado 130
+
+   42 expseq: exp SEMICOLON expseq .
+
+    $padrão  reduzir usando a regra 42 (expseq)
+
+
+Estado 131
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   26    | exp MINUS exp .
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   30    | MINUS exp .
+
+    AND  deslocar, e ir ao estado 45
+    OR   deslocar, e ir ao estado 46
+
+    ID         reduzir usando a regra 26 (exp)
+    ID         [reduzir usando a regra 30 (exp)]
+    STRING     reduzir usando a regra 26 (exp)
+    STRING     [reduzir usando a regra 30 (exp)]
+    INT        reduzir usando a regra 26 (exp)
+    INT        [reduzir usando a regra 30 (exp)]
+    SEMICOLON  reduzir usando a regra 26 (exp)
+    SEMICOLON  [reduzir usando a regra 30 (exp)]
+    LPAREN     reduzir usando a regra 26 (exp)
+    LPAREN     [reduzir usando a regra 30 (exp)]
+    PLUS       reduzir usando a regra 26 (exp)
+    PLUS       [reduzir usando a regra 30 (exp)]
+    MINUS      reduzir usando a regra 26 (exp)
+    MINUS      [reduzir usando a regra 30 (exp)]
+    TIMES      reduzir usando a regra 30 (exp)
+    DIVIDE     reduzir usando a regra 30 (exp)
+    EQ         reduzir usando a regra 26 (exp)
+    EQ         [reduzir usando a regra 30 (exp)]
+    NEQ        reduzir usando a regra 26 (exp)
+    NEQ        [reduzir usando a regra 30 (exp)]
+    LT         reduzir usando a regra 26 (exp)
+    LT         [reduzir usando a regra 30 (exp)]
+    LE         reduzir usando a regra 26 (exp)
+    LE         [reduzir usando a regra 30 (exp)]
+    GT         reduzir usando a regra 26 (exp)
+    GT         [reduzir usando a regra 30 (exp)]
+    GE         reduzir usando a regra 26 (exp)
+    GE         [reduzir usando a regra 30 (exp)]
+    AND        [reduzir usando a regra 26 (exp)]
+    AND        [reduzir usando a regra 30 (exp)]
+    OR         [reduzir usando a regra 26 (exp)]
+    OR         [reduzir usando a regra 30 (exp)]
+    IF         reduzir usando a regra 26 (exp)
+    IF         [reduzir usando a regra 30 (exp)]
+    WHILE      reduzir usando a regra 26 (exp)
+    WHILE      [reduzir usando a regra 30 (exp)]
+    FOR        reduzir usando a regra 26 (exp)
+    FOR        [reduzir usando a regra 30 (exp)]
+    LET        reduzir usando a regra 26 (exp)
+    LET        [reduzir usando a regra 30 (exp)]
+    END        reduzir usando a regra 26 (exp)
+    END        [reduzir usando a regra 30 (exp)]
+    BREAK      reduzir usando a regra 26 (exp)
+    BREAK      [reduzir usando a regra 30 (exp)]
+    NIL        reduzir usando a regra 26 (exp)
+    NIL        [reduzir usando a regra 30 (exp)]
+    $padrão   reduzir usando a regra 26 (exp)
+
+
+Estado 132
+
+   13 exp: FOR ID ASSIGN exp TO exp DO . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 140
+    lvalue  ir ao estado 14
+
+
+Estado 133
+
+   64 tyfield: ID COLON ID .
+
+    $padrão  reduzir usando a regra 64 (tyfield)
+
+
+Estado 134
+
+   68 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON . ID EQ exp
+
+    ID  deslocar, e ir ao estado 141
+
+
+Estado 135
+
+   67 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 142
+    lvalue  ir ao estado 14
+
+
+Estado 136
+
+   63 tyfields: tyfield COMMA tyfields .
+
+    $padrão  reduzir usando a regra 63 (tyfields)
+
+
+Estado 137
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   66 vardec: VAR ID COLON ID ASSIGN exp .
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    $padrão  reduzir usando a regra 66 (vardec)
+
+
+Estado 138
+
+   59 ty: LBRACE tyfields RBRACE .
+
+    $padrão  reduzir usando a regra 59 (ty)
+
+
+Estado 139
+
+   60 ty: ARRAY OF ID .
+
+    $padrão  reduzir usando a regra 60 (ty)
+
+
+Estado 140
+
+   13 exp: FOR ID ASSIGN exp TO exp DO exp .
+   18    | exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    PLUS      [reduzir usando a regra 13 (exp)]
+    MINUS     [reduzir usando a regra 13 (exp)]
+    TIMES     [reduzir usando a regra 13 (exp)]
+    DIVIDE    [reduzir usando a regra 13 (exp)]
+    EQ        [reduzir usando a regra 13 (exp)]
+    NEQ       [reduzir usando a regra 13 (exp)]
+    LT        [reduzir usando a regra 13 (exp)]
+    LE        [reduzir usando a regra 13 (exp)]
+    GT        [reduzir usando a regra 13 (exp)]
+    GE        [reduzir usando a regra 13 (exp)]
+    AND       [reduzir usando a regra 13 (exp)]
+    OR        [reduzir usando a regra 13 (exp)]
+    $padrão  reduzir usando a regra 13 (exp)
+
+
+Estado 141
+
+   68 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID . EQ exp
+
+    EQ  deslocar, e ir ao estado 143
+
+
+Estado 142
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   67 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ exp .
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    $padrão  reduzir usando a regra 67 (fundec)
+
+
+Estado 143
+
+   68 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+
+    exp     ir ao estado 144
+    lvalue  ir ao estado 14
+
+
+Estado 144
+
+   18 exp: exp . EQ exp
+   19    | exp . NEQ exp
+   20    | exp . GT exp
+   21    | exp . LT exp
+   22    | exp . GE exp
+   23    | exp . LE exp
+   24    | exp . AND exp
+   25    | exp . OR exp
+   26    | exp . MINUS exp
+   27    | exp . PLUS exp
+   28    | exp . DIVIDE exp
+   29    | exp . TIMES exp
+   68 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp .
+
+    PLUS    deslocar, e ir ao estado 35
+    MINUS   deslocar, e ir ao estado 36
+    TIMES   deslocar, e ir ao estado 37
+    DIVIDE  deslocar, e ir ao estado 38
+    EQ      deslocar, e ir ao estado 39
+    NEQ     deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+    AND     deslocar, e ir ao estado 45
+    OR      deslocar, e ir ao estado 46
+
+    $padrão  reduzir usando a regra 68 (fundec)

@@ -3,6 +3,7 @@
 #include "util.h"
 #include "errormsg.h"
 
+// int yydebug = 1;
 int yylex(void); /* function prototype */
 
 void yyerror(char *s)
@@ -32,12 +33,132 @@ void yyerror(char *s)
 
 %start program
 
+%nonassoc EQ NEQ GT GE LT LE
+%left PLUS MINUS
+%left TIMES DIVIDE
+
 %%
 
-program:	exp
+program
+  : exp
+  ;
 
-exp:   ID
+exp
+  : lvalue
+  | NIL
+  | INT
+  | STRING
+  | BREAK
+  | ID LBRACE recordfield recordfields RBRACE
+  | ID LBRACK exp RBRACK OF exp
+  | ID LPAREN formalparams RPAREN
+  | IF exp THEN exp
+  | IF exp THEN exp ELSE exp
+  | WHILE exp DO exp
+  | FOR ID ASSIGN exp TO exp DO exp
+  | lvalue ASSIGN exp
+  | LET maybedecs IN maybeexpseq END
+  | LPAREN maybeexp RPAREN
+  | LPAREN expseqsemi RPAREN
+  | exp EQ exp
+  | exp NEQ exp
+  | exp GT exp
+  | exp LT exp
+  | exp GE exp
+  | exp LE exp
+  | exp AND exp
+  | exp OR exp
+  | exp MINUS exp
+  | exp PLUS exp
+  | exp DIVIDE exp
+  | exp TIMES exp
+  | MINUS exp %prec TIMES
+  ;
 
+maybeexp
+  : %empty
+  | exp
+  ;
 
+formalparams
+  : %empty
+  | exp
+  | exp COMMA formalparams
+  ;
 
-	
+recordfields
+  : %empty
+  | COMMA recordfield recordfields
+  ;
+
+recordfield
+  : ID EQ exp
+  ;
+
+maybeexpseq
+  : %empty
+  | expseq
+  ;
+
+expseq
+  : exp
+  | exp SEMICOLON expseq
+  | exp expseq
+  ;
+
+expseqsemi
+  : exp SEMICOLON expseqsemi
+  | exp
+  ;
+
+lvalue
+  : ID
+  | lvalue DOT ID
+  | ID LBRACK exp RBRACK
+  | lvalue LBRACK exp RBRACK
+  ;
+
+maybedecs
+  : %empty
+  | decs
+  ;
+
+decs
+  : dec
+  | decs dec
+  ;
+
+dec
+  : tydec
+  | vardec
+  | fundec
+  ;
+
+tydec
+  : TYPE ID EQ ty
+  ;
+
+ty
+  : ID
+  | LBRACE tyfields RBRACE
+  | ARRAY OF ID
+
+tyfields
+  : %empty
+  | tyfield
+  | tyfield COMMA tyfields
+  ;
+
+tyfield
+  : ID COLON ID
+  ;
+
+vardec
+  : VAR ID ASSIGN exp
+  | VAR ID COLON ID ASSIGN exp
+  ;
+
+fundec
+  : FUNCTION ID LPAREN tyfields RPAREN EQ exp
+  | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp
+  ;
